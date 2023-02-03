@@ -34,14 +34,14 @@ M.run = function(args)
 	end
 	local winnr = api.nvim_get_current_win()
 
-	local _, runner_bufnr = u.open_coderunner_win({
+	local runner_bufwin_ids = u.open_coderunner_win({
 		split = args.split,
 		scale = args.scale,
 		filetype = config.filetype,
 	})
 	fn.win_gotoid(winnr)
 
-	au.write_highlights(cmd_str, runner, runner_bufnr, winnr, cur_file, config)
+	au.write_highlights(cmd_str, runner, runner_bufwin_ids)
 	cmd.write()
 end
 

@@ -24,9 +24,10 @@ local q_quit = function()
 	})
 end
 
---  TODO: 2023-02-02 - this can receive arguments
-M.write_highlights = function(cmd_str, runner, runner_bufnr, winnr, cur_file, config)
+M.write_highlights = function(cmd_str, runner, runner_bufwin_ids)
+	local config = require("coderunner.config").opts
 	local cur_file = fn.expand("%:p")
+	local winnr = api.nvim_get_current_win()
 	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. ft .. winnr
 	au("BufWritePost", {
 		group = aug(autocmd_group_name),
@@ -34,17 +35,15 @@ M.write_highlights = function(cmd_str, runner, runner_bufnr, winnr, cur_file, co
 		callback = function()
 			local banner = { ">> " .. cmd_str, "" }
 			local highlight = { stderr = "ErrorMsg", stdout = "TermCursorNC" }
-			api.nvim_buf_set_lines(runner_bufnr, 0, -1, false, banner)
-			u.add_highlight_to_range(runner_bufnr, -1, "DiagnosticHint", 0, #banner)
+			api.nvim_buf_set_lines(runner_bufwin_ids.bufnr, 0, -1, false, banner)
+			u.add_highlight_to_range(runner_bufwin_ids.bufnr, -1, "DiagnosticHint", 0, #banner)
 			local output_lines = function(_, data, name)
 				if data then
-					api.nvim_buf_set_lines(runner_bufnr, -1, -1, false, data)
-					local last_line = api.nvim_buf_line_count(runner_bufnr)
-					u.add_highlight_to_range(runner_bufnr, -1, highlight[name], last_line - #data, last_line)
-					--  TODO: 2023-02-02 - config can be gotten from require("coderunner.config").opts)
+					api.nvim_buf_set_lines(runner_bufwin_ids.bufnr, -1, -1, false, data)
+					local last_line = api.nvim_buf_line_count(runner_bufwin_ids.bufnr)
+					u.add_highlight_to_range(runner_bufwin_ids.bufnr, -1, highlight[name], last_line - #data, last_line)
 					if config.cursor.lastline then
-						--  TODO: 2023-02-02 - get winnr
-						-- api.nvim_win_set_cursor(runner_winnr, { last_line, 0 })
+						api.nvim_win_set_cursor(runner_bufwin_ids.winnr, { last_line, 0 })
 					end
 				end
 			end
