@@ -18,30 +18,29 @@ local q_quit = function()
 	})
 end
 
-M.write_highlights = function(cmd_str, runner, runner_bufwin_ids)
-	local config = require("coderunner.config").opts
+M.write_highlights = function(cmd_runner, runner_bufwin_ids)
 	local cur_file = fn.expand("%:p")
-	local winnr = api.nvim_get_current_win()
-	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. ft .. winnr
+	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. ft .. api.nvim_get_current_win()
+	local runner_bufnr = runner_bufwin_ids.bufnr
 	au("BufWritePost", {
 		group = aug(autocmd_group_name),
 		pattern = cur_file,
 		callback = function()
-			local banner = { ">> " .. cmd_str, "" }
+			local banner = { ">> " .. cmd_runner.cmd_str, "" }
 			local highlight = { stderr = "ErrorMsg", stdout = "TermCursorNC" }
-			api.nvim_buf_set_lines(runner_bufwin_ids.bufnr, 0, -1, false, banner)
-			u.add_highlight_to_range(runner_bufwin_ids.bufnr, -1, "DiagnosticHint", 0, #banner)
+			api.nvim_buf_set_lines(runner_bufnr, 0, -1, false, banner)
+			u.add_highlight_to_range(runner_bufnr, -1, "DiagnosticHint", 0, #banner)
 			local output_lines = function(_, data, name)
 				if data then
-					api.nvim_buf_set_lines(runner_bufwin_ids.bufnr, -1, -1, false, data)
-					local last_line = api.nvim_buf_line_count(runner_bufwin_ids.bufnr)
-					u.add_highlight_to_range(runner_bufwin_ids.bufnr, -1, highlight[name], last_line - #data, last_line)
-					if config.cursor.lastline then
+					api.nvim_buf_set_lines(runner_bufnr, -1, -1, false, data)
+					local last_line = api.nvim_buf_line_count(runner_bufnr)
+					u.add_highlight_to_range(runner_bufnr, -1, highlight[name], last_line - #data, last_line)
+					if require("coderunner.config").opts.cursor.lastline then
 						api.nvim_win_set_cursor(runner_bufwin_ids.winnr, { last_line, 0 })
 					end
 				end
 			end
-			fn.jobstart(runner, {
+			fn.jobstart(cmd_runner.runner, {
 				stdout_buffered = true,
 				stderr_buffered = true,
 				on_stdout = output_lines,

@@ -53,7 +53,7 @@ M.open_coderunner_win = function(config)
 	if config.split == "vertical" then
 		api.nvim_win_set_height(winnr, math.floor(o.lines * config.scale))
 	end
-	return winnr, bufnr
+	return { winnr = winnr, bufnr = bufnr }
 end
 
 M.add_highlight_to_range = function(buf, ns, hl, start_line, end_line)
