@@ -6,16 +6,10 @@ local M = {}
 
 local coderunner_augroup_name = "CodeRunnerQToQuit"
 
-local coderunner_augroup
-
-M.create_augroup = function()
-	return aug(coderunner_augroup_name)
-end
-
 local q_quit = function()
 	local config = require("coderunner.config").opts
 	au({ "FileType" }, {
-		group = coderunner_augroup,
+		group = aug(coderunner_augroup_name),
 		pattern = config.filetype,
 		callback = function(event)
 			vim.bo[event.buf].buflisted = false
@@ -57,8 +51,7 @@ M.write_highlights = function(cmd_str, runner, runner_bufwin_ids)
 	})
 end
 
-M.create_autocmds = function()
-	coderunner_augroup = M.create_augroup()
+M.init = function()
 	q_quit()
 end
 
