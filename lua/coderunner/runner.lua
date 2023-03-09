@@ -7,7 +7,6 @@ local get_cmd_runner = function(lang)
 	local cur_file = fn.expand("%:p")
 	local cmd_str = lang.cmd
 	local runner = { lang.cmd }
-
 	if lang.cmd_args ~= "" then
 		for _, arg in ipairs(vim.split(lang.cmd_args, " ")) do
 			table.insert(lang.cmd, arg)
@@ -22,7 +21,6 @@ local get_cmd_runner = function(lang)
 		end
 		cmd_str = cmd_str .. " " .. lang.args
 	end
-
 	return { cmd_str = cmd_str, runner = runner }
 end
 
@@ -38,7 +36,7 @@ M.run = function(args)
 		return
 	end
 
-	local cmd_runner = get_cmd_runner(lang)
+	-- local cmd_runner = get_cmd_runner(lang)
 	local winnr = api.nvim_get_current_win()
 	local runner_bufwin_ids = u.open_coderunner_win({
 		split = args.split,
@@ -47,8 +45,8 @@ M.run = function(args)
 	})
 
 	fn.win_gotoid(winnr)
-	au.write_highlights(cmd_runner, runner_bufwin_ids)
-	cmd.write()
+	-- au.write_highlights(cmd_runner, runner_bufwin_ids)
+	-- cmd.write()
 end
 
 return M
