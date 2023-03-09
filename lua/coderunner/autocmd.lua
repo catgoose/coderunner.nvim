@@ -51,7 +51,7 @@ M.write_highlights = function(cmd_runner, runner_bufwin_ids)
 end
 
 M.init = function()
-	q_quit()
+	-- q_quit()
 end
 
 return M

@@ -4,7 +4,6 @@ local M = {}
 local set_opts = function(config, winnr, bufnr)
 	api.nvim_win_set_option(winnr, "number", false)
 	api.nvim_win_set_option(winnr, "relativenumber", false)
-	api.nvim_buf_set_option(bufnr, "buftype", "nofile")
 	if config.filetype then
 		api.nvim_buf_set_option(bufnr, "filetype", config.filetype)
 	end
@@ -38,6 +37,7 @@ local open_split = function(config)
 		end
 		winnr = api.nvim_get_current_win()
 		api.nvim_win_set_buf(winnr, bufnr)
+		cmd.terminal()
 		api.nvim_set_current_win(cur_winnr)
 	end
 	set_opts(config, winnr, bufnr)

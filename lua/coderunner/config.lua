@@ -14,8 +14,9 @@ local M = {
 			python = {
 				cmd = { "python3" },
 			},
-			cpp = {
+			cpr = {
 				"make",
+				{ "[#ask]", "Enter make argument" },
 			},
 		},
 		split = "horizontal",
