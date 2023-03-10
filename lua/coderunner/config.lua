@@ -15,8 +15,9 @@ local M = {
 				cmd = { "python3", "[#file]" },
 			},
 			cpp = {
+				{ "clear" },
 				{ "make", { "[#ask]", "Enter make argument" } },
-				{ "[#ask]", "Enter command to run" },
+				{ { "[#ask]", "Enter executable" } },
 			},
 		},
 		split = "horizontal",

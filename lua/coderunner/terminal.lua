@@ -1,4 +1,7 @@
-local ft = vim.bo.filetype
+local ft, fn, api, au = vim.bo.filetype, vim.fn, vim.api, vim.api.nvim_create_autocmd
+local u = require("coderunner.utils")
+local aug = u.create_augroup
+
 local M = {}
 
 local function get_terminal(bufnr)
@@ -40,8 +43,29 @@ local build_cmd_text = function(lang)
 	for _, cmd in ipairs(lang) do
 		table.insert(cmd_tbl, parse_cmd(cmd))
 	end
-	vim.pretty_print(cmd_tbl)
 	return cmd_tbl
+end
+
+local write_run_autocmd = function(term_cmds, terminal)
+	local cur_file = fn.expand("%:p")
+	local bufnr = api.nvim_get_current_buf()
+	local function send_to_term(cmds, term)
+		for _, cmd in ipairs(cmds) do
+			send_to_terminal(term, cmd)
+		end
+	end
+	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. ft .. api.nvim_get_current_win()
+	au("BufWritePost", {
+		group = aug(autocmd_group_name),
+		pattern = cur_file,
+		callback = function(event)
+			if event.buf ~= bufnr then
+				return
+			end
+			send_to_term(term_cmds, terminal)
+		end,
+	})
+	send_to_term(term_cmds, terminal)
 end
 
 M.send = function(bufnr)
@@ -53,15 +77,16 @@ M.send = function(bufnr)
 	end
 
 	local cmds = build_cmd_text(lang)
-
 	local terminal = get_terminal(bufnr)
 	if not terminal or #cmds == 0 then
 		return nil
 	end
 
-	for i, cmd in ipairs(cmds) do
-		send_to_terminal(terminal, cmd[i])
+	local term_cmds = {}
+	for _, cmd in ipairs(cmds) do
+		table.insert(term_cmds, table.concat(cmd, " "))
 	end
+	write_run_autocmd(term_cmds, terminal)
 	return true
 end
 return M
