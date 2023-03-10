@@ -75,11 +75,11 @@ local parse_cmd = function(cmd)
 end
 
 local build_cmd_text = function(cmd_tbl)
-	local new_cmd_tbl = {}
+	local parsed_cmd_tbl = {}
 	for _, cmd in ipairs(cmd_tbl) do
-		table.insert(new_cmd_tbl, parse_cmd(cmd))
+		table.insert(parsed_cmd_tbl, parse_cmd(cmd))
 	end
-	return new_cmd_tbl
+	return parsed_cmd_tbl
 end
 
 M.send = function(bufwin_ids, cmd_tbl)
