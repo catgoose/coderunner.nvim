@@ -20,9 +20,7 @@ M.run = function(args)
 
 	fn.win_gotoid(winnr)
 
-	if not term.send(runner_bufnr) then
-		vim.notify("No runner found for filetype: " .. config.filetype, vim.log.levels.WARN)
-	end
+	term.send(runner_bufnr)
 end
 
 return M

@@ -3,20 +3,20 @@ local M = {
 		dev = false,
 		langs = {
 			ruby = {
-				cmd = { "ruby" },
+				cmd = { "ruby", "[#file]" },
 			},
 			lua = {
-				cmd = { "lua" },
+				cmd = { "lua", "[#file]" },
 			},
 			javascript = {
-				cmd = { "node" },
+				cmd = { "node", "[#file]" },
 			},
 			python = {
-				cmd = { "python3" },
+				cmd = { "python3", "[#file]" },
 			},
-			cpr = {
-				"make",
-				{ "[#ask]", "Enter make argument" },
+			cpp = {
+				{ "make", { "[#ask]", "Enter make argument" } },
+				{ "[#ask]", "Enter command to run" },
 			},
 		},
 		split = "horizontal",

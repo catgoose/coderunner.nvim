@@ -48,7 +48,6 @@ M.open_coderunner_win = function(config)
 	config = config or {}
 	config.split = config.split or "horizontal"
 	config.scale = config.scale or 1
-
 	local winnr, bufnr = open_split(config)
 	return { winnr = winnr, bufnr = bufnr }
 end
