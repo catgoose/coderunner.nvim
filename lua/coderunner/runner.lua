@@ -56,6 +56,14 @@ end
 M.run = function(args)
 	args = args or {}
 	local config = require("coderunner.config").opts
+
+	local ft = vim.bo.filetype
+	local lang = config.langs[ft]
+	if lang == nil then
+		vim.notify("No runner found for filetype: " .. ft, vim.log.levels.WARN)
+		return nil
+	end
+
 	args.split = args.split or config.split
 	args.scale = args.scale or config.scale
 
@@ -68,7 +76,7 @@ M.run = function(args)
 
 	fn.win_gotoid(cur_winnr)
 
-	term.send(runner_bufwin_ids)
+	term.send(runner_bufwin_ids, lang)
 end
 
 return M

@@ -17,7 +17,7 @@ local M = {
 			cpp = {
 				{ "clear" },
 				{ "make", { "[#ask]", "Enter make argument" } },
-				{ { "[#ask]", "Enter executable" } },
+				{ { "[#ask]", "Command to run after make" } },
 			},
 		},
 		split = "horizontal",

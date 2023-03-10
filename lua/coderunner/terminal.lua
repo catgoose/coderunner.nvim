@@ -21,34 +21,6 @@ local send_to_terminal = function(terminal_chan, term_cmd_text)
 	vim.api.nvim_chan_send(terminal_chan, term_cmd_text .. "\n")
 end
 
-local parse_cmd = function(cmd)
-	local cmds = {}
-	for _, c in pairs(cmd) do
-		if type(c) == "string" then
-			if c == "[#file]" then
-				table.insert(cmds, vim.fn.expand("%:t"))
-			else
-				table.insert(cmds, c)
-			end
-		end
-		if type(c) == "table" then
-			if c[1] == "[#ask]" then
-				local input = vim.fn.input(c[2] .. ": ")
-				table.insert(cmds, input)
-			end
-		end
-	end
-	return cmds
-end
-
-local build_cmd_text = function(lang)
-	local cmd_tbl = {}
-	for _, cmd in ipairs(lang) do
-		table.insert(cmd_tbl, parse_cmd(cmd))
-	end
-	return cmd_tbl
-end
-
 local write_run_autocmd = function(term_cmds, terminal, bufwin_ids)
 	local cur_file = fn.expand("%:p")
 	local bufnr = api.nvim_get_current_buf()
@@ -82,15 +54,39 @@ local write_run_autocmd = function(term_cmds, terminal, bufwin_ids)
 	send_to_term(term_cmds, terminal)
 end
 
-M.send = function(bufwin_ids)
-	local config = require("coderunner.config").opts
-	local lang = config.langs[ft]
-	if lang == nil then
-		vim.notify("No runner found for filetype: " .. ft, vim.log.levels.WARN)
-		return nil
+local parse_cmd = function(cmd)
+	local cmds = {}
+	for _, c in pairs(cmd) do
+		if type(c) == "string" then
+			if c == "[#file]" then
+				table.insert(cmds, vim.fn.expand("%:t"))
+			else
+				table.insert(cmds, c)
+			end
+		end
+		if type(c) == "table" then
+			if c[1] == "[#ask]" then
+				local input = vim.fn.input(c[2] .. ": ")
+				table.insert(cmds, input)
+			end
+		end
 	end
+	vim.pretty_print(cmds)
+	vim.pretty_print(cmd)
+	return cmds
+end
 
+local build_cmd_text = function(lang)
+	local cmd_tbl = {}
+	for _, cmd in ipairs(lang) do
+		table.insert(cmd_tbl, parse_cmd(cmd))
+	end
+	return cmd_tbl
+end
+
+M.send = function(bufwin_ids, lang)
 	local cmds = build_cmd_text(lang)
+	vim.pretty_print(cmds)
 	local terminal = get_terminal(bufwin_ids.bufnr)
 	if not terminal or #cmds == 0 then
 		return nil
