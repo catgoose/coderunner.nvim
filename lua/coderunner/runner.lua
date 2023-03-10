@@ -58,8 +58,8 @@ M.run = function(args)
 	local config = require("coderunner.config").opts
 
 	local ft = vim.bo.filetype
-	local lang = config.langs[ft]
-	if lang == nil then
+	local cmd_tbl = config.langs[ft]
+	if cmd_tbl == nil then
 		vim.notify("No runner found for filetype: " .. ft, vim.log.levels.WARN)
 		return nil
 	end
@@ -76,7 +76,7 @@ M.run = function(args)
 
 	fn.win_gotoid(cur_winnr)
 
-	term.send(runner_bufwin_ids, lang)
+	term.send(runner_bufwin_ids, cmd_tbl)
 end
 
 return M

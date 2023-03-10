@@ -71,29 +71,26 @@ local parse_cmd = function(cmd)
 			end
 		end
 	end
-	vim.pretty_print(cmds)
-	vim.pretty_print(cmd)
 	return cmds
 end
 
-local build_cmd_text = function(lang)
-	local cmd_tbl = {}
-	for _, cmd in ipairs(lang) do
-		table.insert(cmd_tbl, parse_cmd(cmd))
+local build_cmd_text = function(cmd_tbl)
+	local new_cmd_tbl = {}
+	for _, cmd in ipairs(cmd_tbl) do
+		table.insert(new_cmd_tbl, parse_cmd(cmd))
 	end
-	return cmd_tbl
+	return new_cmd_tbl
 end
 
-M.send = function(bufwin_ids, lang)
-	local cmds = build_cmd_text(lang)
-	vim.pretty_print(cmds)
+M.send = function(bufwin_ids, cmd_tbl)
+	local cmd_text = build_cmd_text(cmd_tbl)
 	local terminal = get_terminal(bufwin_ids.bufnr)
-	if not terminal or #cmds == 0 then
+	if not terminal or #cmd_tbl == 0 then
 		return nil
 	end
 
 	local term_cmds = {}
-	for _, cmd in ipairs(cmds) do
+	for _, cmd in ipairs(cmd_text) do
 		table.insert(term_cmds, table.concat(cmd, " "))
 	end
 	write_run_autocmd(term_cmds, terminal, bufwin_ids)
