@@ -5,7 +5,6 @@ local M = {}
 M.setup = function(config)
 	config = config or {}
 	cnf.init(config)
-	require("coderunner.autocmd").init()
 end
 
 M.run = function(config)
