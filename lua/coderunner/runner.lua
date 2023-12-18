@@ -10,10 +10,10 @@ local set_opts = function(config, winnr, bufnr)
 	if config.filetype then
 		api.nvim_buf_set_option(bufnr, "filetype", config.filetype)
 	end
-	if config.split == "horizontal" then
+	if config.split == "vertical" then
 		api.nvim_win_set_width(winnr, math.floor(o.columns * config.scale))
 	end
-	if config.split == "vertical" then
+	if config.split == "horizontal" then
 		api.nvim_win_set_height(winnr, math.floor(o.lines * config.scale))
 	end
 end
@@ -32,10 +32,10 @@ local open_split = function(config)
 	end
 	if winnr == nil then
 		bufnr = api.nvim_create_buf(false, false)
-		if config.split == "horizontal" then
+		if config.split == "vertical" then
 			cmd([[botright vsplit]])
 		end
-		if config.split == "vertical" then
+		if config.split == "horizontal" then
 			cmd([[botright split]])
 		end
 		winnr = api.nvim_get_current_win()
