@@ -2,8 +2,6 @@ local term = require("coderunner.terminal")
 local fn, api, cmd, o = vim.fn, vim.api, vim.cmd, vim.o
 local M = {}
 
---  TODO: 2023-12-17 - Set terminal autocmds
-
 local set_opts = function(config, winnr, bufnr)
 	api.nvim_win_set_option(winnr, "number", false)
 	api.nvim_win_set_option(winnr, "relativenumber", false)
@@ -75,6 +73,8 @@ M.run = function(args)
 		scale = args.scale,
 		filetype = config.filetype,
 	})
+
+	require("coderunner.autocmd").term_buf_autocmd(runner_bufwin_ids.bufnr)
 
 	fn.win_gotoid(cur_winnr)
 
