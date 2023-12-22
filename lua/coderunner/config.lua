@@ -15,6 +15,10 @@ local M = {
 				{ "clear" },
 				{ "node", "[#file]" },
 			},
+			typescript = {
+				{ "clear" },
+				{ "ts-node", "[#file]" },
+			},
 			cpp = {
 				{ "clear" },
 				{ "make", { "[#ask]", "Enter make argument" } },
