@@ -25,7 +25,7 @@ local M = {
 				{ { "[#ask]", "Command to run after make" } },
 			},
 		},
-		split = "horizontal",
+		split = "vertical",
 		scale = 0.25,
 		filetype = "coderunner",
 	},
