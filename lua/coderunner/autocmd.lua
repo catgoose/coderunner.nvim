@@ -7,13 +7,14 @@ local autocmd = vim.api.nvim_create_autocmd
 
 local M = {}
 
-M.term_buf_autocmd = function(bufnr)
+M.term_buf_autocmd = function(runner_bufwin_ids, group_name)
+	local runner_bufnr = runner_bufwin_ids.bufnr
 	local terminal = create_augroup("CoderunnerTerminalLocalOptions")
 	autocmd({ "TermOpen" }, {
 		group = terminal,
 		pattern = { "*" },
 		callback = function(event)
-			if event.buf ~= bufnr then
+			if event.buf ~= runner_bufnr then
 				return
 			end
 			vim.opt_local.number = false
@@ -37,12 +38,22 @@ M.term_buf_autocmd = function(bufnr)
 		group = terminal,
 		pattern = { "*" },
 		callback = function(event)
-			if event.buf ~= bufnr then
+			if event.buf ~= runner_bufnr then
 				return
 			end
 			if vim.bo.filetype == "coderunner" then
 				vim.cmd.startinsert()
 			end
+		end,
+	})
+	autocmd({ "TermClose", "WinClosed" }, {
+		group = terminal,
+		pattern = { "*" },
+		callback = function(event)
+			if event.buf ~= runner_bufnr then
+				return
+			end
+			create_augroup(group_name, { clear = true })
 		end,
 	})
 end

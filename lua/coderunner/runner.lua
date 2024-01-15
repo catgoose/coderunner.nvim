@@ -50,7 +50,18 @@ local open_coderunner_win = function(config)
 	config.split = config.split or "vertical"
 	config.scale = config.scale or 1
 	local winnr, bufnr = open_split(config)
-	return { winnr = winnr, bufnr = bufnr }
+	return {
+		winnr = winnr,
+		bufnr = bufnr,
+	}
+end
+
+local get_autocmd_group_name = function()
+	local cur_file = fn.expand("%:p")
+	local bufnr = api.nvim_get_current_buf()
+	local winnr = api.nvim_get_current_win()
+	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. vim.bo.filetype .. winnr .. bufnr
+	return autocmd_group_name
 end
 
 M.run = function(args)
@@ -74,11 +85,12 @@ M.run = function(args)
 		filetype = config.filetype,
 	})
 
-	require("coderunner.autocmd").term_buf_autocmd(runner_bufwin_ids.bufnr)
+	local group_name = get_autocmd_group_name()
+	require("coderunner.autocmd").term_buf_autocmd(runner_bufwin_ids, group_name)
 
 	fn.win_gotoid(cur_winnr)
 
-	term.send(runner_bufwin_ids, cmd_tbl)
+	term.send(runner_bufwin_ids, cmd_tbl, group_name)
 end
 
 return M

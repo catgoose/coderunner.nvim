@@ -21,17 +21,15 @@ local send_to_terminal = function(terminal_chan, term_cmd_text)
 	vim.api.nvim_chan_send(terminal_chan, term_cmd_text .. "\n")
 end
 
-local write_run_autocmd = function(term_cmds, terminal, bufwin_ids)
+local write_run_autocmd = function(term_cmds, terminal, bufwin_ids, group_name)
 	local cur_file = fn.expand("%:p")
 	local bufnr = api.nvim_get_current_buf()
-	local winnr = api.nvim_get_current_win()
 	local function send_to_term(cmds, term)
 		for _, cmd in ipairs(cmds) do
 			send_to_terminal(term, cmd)
 		end
 	end
-	local autocmd_group_name = "CodeRunnerOnBufWrite" .. cur_file .. ft .. winnr .. bufnr
-	local au_write = create_augroup(autocmd_group_name)
+	local au_write = create_augroup(group_name)
 	au("BufWritePost", {
 		group = au_write,
 		pattern = cur_file,
@@ -48,7 +46,7 @@ local write_run_autocmd = function(term_cmds, terminal, bufwin_ids)
 			if event.buf ~= bufwin_ids.bufnr or event.match ~= tostring(bufwin_ids.winnr) then
 				return
 			end
-			create_augroup(autocmd_group_name)
+			create_augroup(group_name)
 		end,
 	})
 	send_to_term(term_cmds, terminal)
@@ -82,7 +80,7 @@ local build_cmd_text = function(cmd_tbl)
 	return parsed_cmd_tbl
 end
 
-M.send = function(bufwin_ids, cmd_tbl)
+M.send = function(bufwin_ids, cmd_tbl, group_name)
 	local cmd_text = build_cmd_text(cmd_tbl)
 	local terminal = get_terminal(bufwin_ids.bufnr)
 	if not terminal or #cmd_tbl == 0 then
@@ -93,7 +91,7 @@ M.send = function(bufwin_ids, cmd_tbl)
 	for _, cmd in ipairs(cmd_text) do
 		table.insert(term_cmds, table.concat(cmd, " "))
 	end
-	write_run_autocmd(term_cmds, terminal, bufwin_ids)
+	write_run_autocmd(term_cmds, terminal, bufwin_ids, group_name)
 	return true
 end
 return M
