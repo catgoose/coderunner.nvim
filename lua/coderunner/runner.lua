@@ -2,17 +2,17 @@ local term = require("coderunner.terminal")
 local fn, api, cmd, o = vim.fn, vim.api, vim.cmd, vim.o
 local M = {}
 
-local set_opts = function(config, winnr, bufnr)
-	api.nvim_win_set_option(winnr, "number", false)
-	api.nvim_win_set_option(winnr, "relativenumber", false)
+local set_opts = function(config, win, buf)
+	api.nvim_set_option_value("number", false, { win = win })
+	api.nvim_set_option_value("relativenumber", false, { win = win })
 	if config.filetype then
-		api.nvim_buf_set_option(bufnr, "filetype", config.filetype)
+		api.nvim_set_option_value("filetype", config.filetype, { buf = buf })
 	end
 	if config.split == "vertical" then
-		api.nvim_win_set_width(winnr, math.floor(o.columns * config.scale))
+		api.nvim_win_set_width(win, math.floor(o.columns * config.scale))
 	end
 	if config.split == "horizontal" then
-		api.nvim_win_set_height(winnr, math.floor(o.lines * config.scale))
+		api.nvim_win_set_height(win, math.floor(o.lines * config.scale))
 	end
 end
 
@@ -22,7 +22,7 @@ local open_split = function(config)
 	local bufnr = nil
 	for _, win in ipairs(api.nvim_list_wins()) do
 		local buf = api.nvim_win_get_buf(win)
-		if api.nvim_buf_get_option(buf, "filetype") == config.filetype then
+		if api.nvim_get_option_value("filetype", { buf = buf }) == config.filetype then
 			api.nvim_win_set_buf(win, buf)
 			winnr = win
 			bufnr = buf

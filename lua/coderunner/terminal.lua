@@ -1,4 +1,4 @@
-local ft, fn, api, au = vim.bo.filetype, vim.fn, vim.api, vim.api.nvim_create_autocmd
+local fn, api, au = vim.fn, vim.api, vim.api.nvim_create_autocmd
 
 local M = {}
 
