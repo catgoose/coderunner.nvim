@@ -60,3 +60,7 @@ return {
     {"<leader>cv", [[require("coderunner").run({split = "vertical"})]])},
   }
 ```
+
+## Todo
+
+- [ ] Allow defining a table of actions to perform as a token
